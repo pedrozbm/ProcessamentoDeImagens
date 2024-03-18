@@ -11,9 +11,9 @@ img1 = cv2.imread(img_path1)
 img1 = cv2.resize(img1, dsize=(800, 800), interpolation=cv2.INTER_CUBIC)
 
 print("Arquivo selecionado:", img_path1)
-cv2.imshow('Imagem 1', img1)
-cv2.waitKey(0)
-cv2.destroyAllWindows()
+# cv2.imshow('Imagem 1', img1)
+# cv2.waitKey(0)
+# cv2.destroyAllWindows()
 
 print('Selecione a segunda imagem: ')
 
@@ -23,9 +23,9 @@ img2 = cv2.imread(img_path2)
 img2 = cv2.resize(img2, dsize=(800, 800), interpolation=cv2.INTER_CUBIC)
 
 print("Arquivo selecionado:", img_path2)
-cv2.imshow('Imagem 2', img2)
-cv2.waitKey(0)
-cv2.destroyAllWindows()
+# cv2.imshow('Imagem 2', img2)
+# cv2.waitKey(0)
+# cv2.destroyAllWindows()
 
 added = cv2.add(img1, img2)
 cv2.imshow("added", added)
@@ -36,5 +36,16 @@ subtraction = cv2.subtract(img1, img2)
 cv2.imshow("subtract", subtraction)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
+
+multiplication = cv2.multiply(img1, img2) 
+cv2.imshow("Multiplication", multiplication)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+
+division = cv2.divide(img1, img2)
+cv2.imshow("Division", division)
+cv2.waitKey(0)  
+cv2.destroyAllWindows()
+
 
 
