@@ -3,101 +3,89 @@ import tkinter as tk
 from tkinter import filedialog
 import numpy as np
 
+def load_image():
+    root = tk.Tk()
+    root.withdraw()
+    img_path = filedialog.askopenfilename()
+    return cv2.imread(img_path)
 
+def resize_image(image):
+    return cv2.resize(image, dsize=(800, 800), interpolation=cv2.INTER_CUBIC)
 
- 
-# Abre a janela do explorador de arquivos
-print('Selecione a primeira imagem: ')
-
-# Seleciona a primeira imagem
-img_path1 = filedialog.askopenfilename()
-img1 = cv2.imread(img_path1)
-img1 = cv2.resize(img1, dsize=(800, 800), interpolation=cv2.INTER_CUBIC)
-
-print("Arquivo selecionado:", img_path1)
-# cv2.imshow('Imagem 1', img1)
-# cv2.waitKey(0)
-# cv2.destroyAllWindows()
-
-print('Selecione a segunda imagem: ')
-
-# Seleciona a segunda imagem
-img_path2 = filedialog.askopenfilename()
-img2 = cv2.imread(img_path2)
-img2 = cv2.resize(img2, dsize=(800, 800), interpolation=cv2.INTER_CUBIC)
-
-print("Arquivo selecionado:", img_path2)
-# cv2.imshow('Imagem 2', img2)
-# cv2.waitKey(0)
-# cv2.destroyAllWindows()
-
-added = cv2.add(img1, img2)
-cv2.imshow("added", added)
-cv2.waitKey(0)
-cv2.destroyAllWindows()
-
-subtraction = cv2.subtract(img1, img2)
-cv2.imshow("subtract", subtraction)
-cv2.waitKey(0)
-cv2.destroyAllWindows()
-
-multiplication = cv2.multiply(img1, img2) 
-cv2.imshow("Multiplication", multiplication)
-cv2.waitKey(0)
-cv2.destroyAllWindows()
-
-division = cv2.divide(img1, img2)
-cv2.imshow("Division", division)
-cv2.waitKey(0)  
-cv2.destroyAllWindows()
-
-imgand = cv2.bitwise_and(img1, img2)
-cv2.imshow("And", imgand)
-cv2.waitKey(0)  
-cv2.destroyAllWindows()
-
-imgor = cv2.bitwise_or(img1, img2)
-cv2.imshow("Or", imgor)
-cv2.waitKey(0)  
-cv2.destroyAllWindows()
-
-imnot = cv2.bitwise_not(img1, img2)
-cv2.imshow("Not", imnot)
-cv2.waitKey(0)  
-cv2.destroyAllWindows()
-
-imxor = cv2.bitwise_xor(img1, img2)
-cv2.imshow("Xor", imxor)
-cv2.waitKey(0)  
-cv2.destroyAllWindows()
-
-imagem_cinza = cv2.cvtColor(img1, cv2.COLOR_BGR2GRAY)
-face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
-rostos = face_cascade.detectMultiScale(imagem_cinza, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
-mascara = np.ones(imagem_cinza.shape[:2], dtype=np.uint8) * 255
-
-for (x, y, w, h) in rostos:
-    # Calcular o centro e o raio do círculo
-    centro_x = x + w // 2
-    centro_y = y + h // 2
-    raio = min(w, h) // 2
-    raio *= 1.5
-    # Desenhar o círculo ao redor do rosto
-    # cv2.circle(img1, (centro_x, centro_y), int(raio), (255, 0, 0), 2)
+def show_image(image, title='Image'):
+    cv2.imshow(title, image)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
     
-    cv2.circle(mascara, (centro_x, centro_y), int(raio), 0, -1)
 
-# Inverter a máscara para obter uma máscara fora dos círculos dos rostos
-mascara = cv2.bitwise_not(mascara)
+def operations(img1, img2):
+    added = cv2.add(img1, img2)
+    show_image(added, "Added")
 
-# Aplicar a máscara para a imagem original
-imagem_mascarada = cv2.bitwise_and(img1, img1, mask=mascara)
+    subtraction = cv2.subtract(img1, img2)
+    show_image(subtraction, "Subtraction")
 
-cv2.imshow('Imagem', imagem_mascarada)
-cv2.waitKey(0)
-cv2.destroyAllWindows()
+    multiplication = cv2.multiply(img1, img2) 
+    show_image(multiplication, "Multiplication")
+
+    division = cv2.divide(img1, img2)
+    show_image(division, "Division")
+
+    img_and = cv2.bitwise_and(img1, img2)
+    show_image(img_and, "And")
+
+    img_or = cv2.bitwise_or(img1, img2)
+    show_image(img_or, "Or")
+
+    img_not = cv2.bitwise_not(img1, img2)
+    show_image(img_not, "Not")
+
+    img_xor = cv2.bitwise_xor(img1, img2)
+    show_image(img_xor, "Xor")
+
+def detect_faces(img):
+    imagem_cinza = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+    rostos = face_cascade.detectMultiScale(imagem_cinza, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
+    mascara = np.ones(imagem_cinza.shape[:2], dtype=np.uint8) * 255
+
+    for (x, y, w, h) in rostos:
+        centro_x = x + w // 2
+        centro_y = y + h // 2
+        raio = min(w, h) // 2
+        raio *= 1.5
+        cv2.circle(mascara, (centro_x, centro_y), int(raio), 0, -1)
+
+    mascara = cv2.bitwise_not(mascara)
+    imagem_mascarada = cv2.bitwise_and(img, img, mask=mascara)
+    return imagem_mascarada
+
+def main():
+    print('PROCESSAMENTO DE IMAGENS')
     
-cv2.imshow('Rostos Detectados', img1)
-cv2.waitKey(0)
-cv2.destroyAllWindows()
+    print('Selecione a primeira imagem:')
+    img1 = load_image()
+    img1 = resize_image(img1)
 
+    print('Selecione a segunda imagem:')
+    img2 = load_image()
+    img2 = resize_image(img2)
+
+    print('------------------------')
+    print('[1] - EXIBIR IMAGENS ORIGINAIS')
+    print('[2] - APLICAR OPERACOES:')
+    print('[3] - DETECTAR ROSTOS DA PRIMEIRA IMAGEM')
+    
+    match int(input()):
+        case 1:
+           show_image(img1, "Image 1")
+           show_image(img2, "Image 2")
+        case 2:           
+            operations(img1, img2)
+        case 3: 
+            img1_faces_detected = detect_faces(img1)
+            show_image(img1_faces_detected, "Faces Detected")
+    
+
+if __name__ == "__main__":
+    main()
