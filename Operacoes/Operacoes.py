@@ -4,6 +4,7 @@ from tkinter import filedialog
 import numpy as np
 
 def load_image():
+    
     root = tk.Tk()
     root.withdraw()
     img_path = filedialog.askopenfilename()
@@ -16,8 +17,7 @@ def show_image(image, title='Image'):
     cv2.imshow(title, image)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
-    
-
+  
 def operations(img1, img2):
     added = cv2.add(img1, img2)
     show_image(added, "Added")
@@ -60,6 +60,29 @@ def detect_faces(img):
     imagem_mascarada = cv2.bitwise_and(img, img, mask=mascara)
     return imagem_mascarada
 
+def menu(img1, img2):   
+    print('------------------------')
+    print('[1] - EXIBIR IMAGENS ORIGINAIS')
+    print('[2] - APLICAR OPERACOES:')
+    print('[3] - DETECTAR ROSTOS DA PRIMEIRA IMAGEM')
+    print('[4] - ENCERRAR')
+        
+    n = input()
+    while(n!='4'):
+        match n:
+            case '1':
+               show_image(img1, "Image 1")
+               show_image(img2, "Image 2")
+               return menu(img1, img2)
+            case '2':           
+                operations(img1, img2)
+                return menu(img1, img2)
+
+            case '3': 
+                img1_faces_detected = detect_faces(img1)
+                show_image(img1_faces_detected, "Faces Detected")
+                return menu(img1, img2)                        
+                
 def main():
     print('PROCESSAMENTO DE IMAGENS')
     
@@ -71,21 +94,7 @@ def main():
     img2 = load_image()
     img2 = resize_image(img2)
 
-    print('------------------------')
-    print('[1] - EXIBIR IMAGENS ORIGINAIS')
-    print('[2] - APLICAR OPERACOES:')
-    print('[3] - DETECTAR ROSTOS DA PRIMEIRA IMAGEM')
-    
-    match int(input()):
-        case 1:
-           show_image(img1, "Image 1")
-           show_image(img2, "Image 2")
-        case 2:           
-            operations(img1, img2)
-        case 3: 
-            img1_faces_detected = detect_faces(img1)
-            show_image(img1_faces_detected, "Faces Detected")
-    
+    menu(img1, img2)    
 
 if __name__ == "__main__":
     main()
