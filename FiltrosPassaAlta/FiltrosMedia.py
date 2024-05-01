@@ -77,6 +77,19 @@ def filtro_sobel(imagem):
     return imagem_bordas
 
 
+def filtro_passa_altas_agucamento(imagem, alpha=1.5, beta=-0.5):
+    filtro_passa_altas = np.array([[-1, -1, -1],
+                                   [-1, 9, -1],
+                                   [-1, -1, -1]], dtype=np.float32)
+
+    imagem_filtrada = cv2.filter2D(imagem, -1, filtro_passa_altas)
+
+    imagem_agucada = cv2.addWeighted(imagem, alpha, imagem_filtrada, beta, 0)
+
+    imagem_agucada = np.clip(imagem_agucada, 0, 255).astype(np.uint8)
+
+    return imagem_agucada
+
 def main():
     # Criar a janela da GUI
     root = tk.Tk()
@@ -94,7 +107,7 @@ def main():
     # filtered_image = cv2.filter2D(imagem1, -1, filter)
     # cv2.imshow("imagem com filtro", filtered_image)
 
-    imagem_filtroOeste = filtro_sobel(imagem1)
+    imagem_filtroOeste = filtro_passa_altas_agucamento(imagem1)
     imagem_filtroLeste = filtro_leste(imagem1)
     cv2.imshow("imagem filtro norte", imagem_filtroOeste)
     cv2.imshow("imagem filtro ", imagem_filtroLeste)
