@@ -111,7 +111,7 @@ def main():
     root = tk.Tk()
     root.title("Selecionar Filtro")
 
-    botao_abrir = tk.Button(root, text="Abrir Imagem",
+    botao_abrir = tk.Button(root, text="Abrir Imagem:",
                             command=lambda: selecionar_filtro(abrir_imagem(), filtro_combobox.get()))
     botao_abrir.pack()
 
