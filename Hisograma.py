@@ -1,37 +1,30 @@
 import cv2
-import numpy as np
 import tkinter as tk
 from tkinter import filedialog
 
-# Função para abrir uma imagem usando a interface gráfica do usuário
 def abrir_imagem():
     filepath = filedialog.askopenfilename()
     imagem = cv2.imread(filepath)
     return imagem
 
-# Função para somar duas imagens
 def somar_imagens(imagem1, imagem2):
     if imagem1.shape != imagem2.shape:
-        print("As imagens têm tamanhos diferentes. Não é possível somá-las.")
+        print("As imagens tem tamanhos diferentes. Nao eh possivel soma-las.")
         return None
     else:
         return cv2.add(imagem1, imagem2)
 
-# Função para equalizar o histo
-# 
-# grama de uma imagem
+
 def equalizar_histograma(imagem):
     gray = cv2.cvtColor(imagem, cv2.COLOR_BGR2GRAY)
     equalized = cv2.equalizeHist(gray)
     return equalized
 
-# Função para exibir uma imagem em uma janela separada
 def exibir_imagem(imagem, titulo):
     cv2.imshow(titulo, imagem)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
-# Função principal
 def main():
     # Criar a janela da GUI
     root = tk.Tk()
@@ -58,6 +51,5 @@ def main():
         exibir_imagem(imagem_soma, "Imagem Soma")
         exibir_imagem(imagem_equalizada, "Imagem Equalizada")
 
-# Executar a função principal
 if __name__ == "__main__":
     main()

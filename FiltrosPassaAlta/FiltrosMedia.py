@@ -3,13 +3,11 @@ import tkinter as tk
 from tkinter import filedialog
 import numpy as np
 
-
 def abrir_imagem():
     filepath = filedialog.askopenfilename()
     imagem = cv2.imread(filepath)
     imagem = resize_image(imagem)
     return imagem
-
 
 def resize_image(imagem):
     return cv2.resize(imagem, dsize=(800, 800), interpolation=cv2.INTER_CUBIC)
@@ -18,7 +16,6 @@ def resize_image(imagem):
 def exibir_imagem(imagem, title='Image'):
     cv2.imshow(title, imagem)
     cv2.waitKey(0)
-
 
 def filtro_norte(imagem):
     filtro_norte = np.array([[1, 1, 1],
@@ -59,7 +56,6 @@ def filtro_roberts(imagem):
     imagem_final = np.clip(imagem_final, 0, 255).astype(np.uint8)
     return imagem_final
 
-
 def filtro_sobel(imagem):
     filtro_sobel_x = np.array([[1, 2, 1],
                                [0, 0, 0],
@@ -69,13 +65,11 @@ def filtro_sobel(imagem):
                                [-2, 0, 2],
                                [-1, 0, 1]], dtype=np.float32)
 
-
     img_filtrada_x = cv2.filter2D(imagem, -1, filtro_sobel_x)
     img_filtrada_y = cv2.filter2D(imagem, -1, filtro_sobel_y)
     imagem_bordas = np.sqrt(np.square(img_filtrada_x) + np.square(img_filtrada_y))
     imagem_bordas = np.clip(imagem_bordas, 0, 255).astype(np.uint8)
     return imagem_bordas
-
 
 def filtro_passa_altas_agucamento(imagem, alpha=1.5, beta=-0.5):
     filtro_passa_altas = np.array([[-1, -1, -1],
@@ -90,35 +84,44 @@ def filtro_passa_altas_agucamento(imagem, alpha=1.5, beta=-0.5):
 
     return imagem_agucada
 
+def aplicar_filtro(imagem, filtro):
+    if filtro == "Norte":
+        return filtro_norte(imagem)
+    elif filtro == "Sul":
+        return filtro_sul(imagem)
+    elif filtro == "Leste":
+        return filtro_leste(imagem)
+    elif filtro == "Oeste":
+        return filtro_oeste(imagem)
+    elif filtro == "Roberts":
+        return filtro_roberts(imagem)
+    elif filtro == "Sobel":
+        return filtro_sobel(imagem)
+    elif filtro == "Passa-altas agucamento":
+        return filtro_passa_altas_agucamento(imagem)
+    else:
+        return imagem
+
+
+def selecionar_filtro(imagem, filtro):
+    imagem_processada = aplicar_filtro(imagem, filtro)
+    exibir_imagem(imagem_processada, filtro)
+
 def main():
-    # Criar a janela da GUI
     root = tk.Tk()
-    root.withdraw()  # Ocultar a janela principal
+    root.title("Selecionar Filtro")
 
-    # Abrir a primeira imagem
-    print("Selecione a primeira imagem:")
-    imagem1 = abrir_imagem()
+    botao_abrir = tk.Button(root, text="Abrir Imagem",
+                            command=lambda: selecionar_filtro(abrir_imagem(), filtro_combobox.get()))
+    botao_abrir.pack()
 
-    exibir_imagem(imagem1, "imagem original")
+    filtros = ["Norte", "Sul", "Leste", "Oeste", "Roberts", "Sobel", "Passa-altas agucamento"]
+    filtro_combobox = tk.StringVar()
+    filtro_combobox.set(filtros[0])
+    combobox = tk.OptionMenu(root, filtro_combobox, *filtros)
+    combobox.pack()
 
-    # n = int(input("digite a media do filtro"))
-    #
-    # filter = np.ones((n, n), np.float32) / (n*n)
-    # filtered_image = cv2.filter2D(imagem1, -1, filter)
-    # cv2.imshow("imagem com filtro", filtered_image)
-
-    imagem_filtroOeste = filtro_passa_altas_agucamento(imagem1)
-    imagem_filtroLeste = filtro_leste(imagem1)
-    cv2.imshow("imagem filtro norte", imagem_filtroOeste)
-    cv2.imshow("imagem filtro ", imagem_filtroLeste)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
-
-
-
-
-
-
+    root.mainloop()
 
 if __name__ == "__main__":
     main()
