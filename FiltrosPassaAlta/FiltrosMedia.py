@@ -4,6 +4,8 @@ from tkinter import filedialog
 import numpy as np
 
 def abrir_imagem():
+    root = tk.Tk()
+    root.withdraw()
     filepath = filedialog.askopenfilename()
     imagem = cv2.imread(filepath)
     imagem = resize_image(imagem)
@@ -12,17 +14,19 @@ def abrir_imagem():
 def resize_image(imagem):
     return cv2.resize(imagem, dsize=(800, 800), interpolation=cv2.INTER_CUBIC)
 
-
-def exibir_imagem(imagem, title='Image'):
-    cv2.imshow(title, imagem)
+def exibir_imagens(imagens, titulos):
+    quantidade = len(imagens)
+    for i in range(quantidade):
+        cv2.imshow(titulos[i], imagens[i])
     cv2.waitKey(0)
+    cv2.destroyAllWindows()
 
+# Filtros definidos
 def filtro_norte(imagem):
     filtro_norte = np.array([[1, 1, 1],
                              [ 1,  -1,  1],
                              [ -1,  -1,  -1]])
     return cv2.filter2D(imagem, -1, filtro_norte)
-
 
 def filtro_sul(imagem):
     filtro_sul = np.array([[-1, -1, -1],
@@ -30,13 +34,11 @@ def filtro_sul(imagem):
                            [1, 1, 1]])
     return cv2.filter2D(imagem, -1, filtro_sul)
 
-
 def filtro_leste(imagem):
     filtro_leste = np.array([[-1, 1, 1],
                              [-1, -1, 1],
                              [-1, 1, 1]])
     return cv2.filter2D(imagem, -1, filtro_leste)
-
 
 def filtro_oeste(imagem):
     filtro_oeste = np.array([[1, 1, -1],
@@ -102,27 +104,33 @@ def aplicar_filtro(imagem, filtro):
     else:
         return imagem
 
-
-def selecionar_filtro(imagem, filtro):
-    imagem_processada = aplicar_filtro(imagem, filtro)
-    exibir_imagem(imagem_processada, filtro)
+def selecionar_filtros(imagem, filtros):
+    imagens_resultantes = []
+    titulos = []
+    for filtro in filtros:
+        imagem_processada = aplicar_filtro(imagem, filtro)
+        imagens_resultantes.append(imagem_processada)
+        titulos.append(filtro)
+    exibir_imagens(imagens_resultantes, titulos)
 
 def main():
     root = tk.Tk()
     root.title("Selecionar Filtro")
 
-    botao_abrir = tk.Button(root, text="Abrir Imagem:",
-                            command=lambda: selecionar_filtro(abrir_imagem(), filtro_combobox.get()))
-    botao_abrir.pack()
-
     filtros = ["Norte", "Sul", "Leste", "Oeste", "Roberts", "Sobel", "Passa-altas agucamento"]
     filtro_combobox = tk.StringVar()
     filtro_combobox.set(filtros[0])
-    combobox = tk.OptionMenu(root, filtro_combobox, *filtros)
-    combobox.pack()
+
+    def selecionar_e_aplicar_filtros():
+        imagem = abrir_imagem()
+        if imagem is not None:
+            selecionar_filtros(imagem, filtros)
+
+    botao_abrir = tk.Button(root, text="Abrir Imagem",
+                            command=selecionar_e_aplicar_filtros)
+    botao_abrir.pack()
 
     root.mainloop()
 
 if __name__ == "__main__":
     main()
-
